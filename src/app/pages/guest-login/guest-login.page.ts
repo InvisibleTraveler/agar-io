@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Router } from '@angular/router';
 
-// servicess
+// services
 import { GameService } from '../../services/game.service';
 
 @UntilDestroy()
