@@ -3,6 +3,9 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject } from 'rxjs';
 import { auditTime, filter, map } from 'rxjs/operators';
 
+// services
+import { GameService } from '../../services/game.service';
+
 // models
 import { GameState } from '../../models/game-state';
 import { Point } from '../../models/point';
@@ -15,12 +18,12 @@ import { Point } from '../../models/point';
 })
 export class GamePage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('playField') public canvasRef: ElementRef<HTMLCanvasElement>;
+  public gameOver$ = this.gameService.gameOver$;
+  public coords$ = this.gameService.gameState$.pipe(map(state => state.you));
   private resizeHandler = null;
-  // public gameOver$ = this.gameService.gameOver$;
-  // public coords$ = this.gameService.gameState$.pipe(map(state => state.you));
   private move$ = new BehaviorSubject<Point[]>(null);
 
-  constructor(private changeDetection: ChangeDetectorRef) {}
+  constructor(private changeDetection: ChangeDetectorRef, private gameService: GameService) {}
 
   public ngOnInit(): void {
     this.resizeHandler = this.handleResize.bind(this);
@@ -31,13 +34,13 @@ export class GamePage implements OnInit, AfterViewInit, OnDestroy {
   public ngAfterViewInit(): void {
     this.resizeHandler();
 
-    // this.move$.pipe(auditTime(30), filter(m => !!m), untilDestroyed(this)).subscribe(direction => {
-    //   this.gameService.emitMove(direction[0], direction[1]);
-    // });
+    this.move$.pipe(auditTime(30), filter(m => !!m), untilDestroyed(this)).subscribe(direction => {
+      this.gameService.emitMove(direction[0], direction[1]);
+    });
 
-    // this.gameService.gameState$.pipe(untilDestroyed(this)).subscribe(state => {
-    //   this.draw(state);
-    // });
+    this.gameService.gameState$.pipe(untilDestroyed(this)).subscribe(state => {
+      this.draw(state);
+    });
 
     this.changeDetection.detectChanges();
   }
@@ -45,7 +48,7 @@ export class GamePage implements OnInit, AfterViewInit, OnDestroy {
   public ngOnDestroy(): void {
     window.removeEventListener('resize', this.resizeHandler);
     this.resizeHandler = null;
-    // this.gameService.disconnect();
+    this.gameService.disconnect();
   }
 
   private handleResize(): void {
