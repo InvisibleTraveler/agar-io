@@ -1,0 +1,13 @@
+<div class="game-over-bg" *ngIf="gameOver$ | async as gameOver">
+  <div class="game-over-modal">
+    <h2>Game Over</h2>
+    <p>You killed by: {{ gameOver.killerName }}</p>
+    <button routerLink="/guest-login">go back</button>
+  </div>
+</div>
+<div class="coords" *ngIf="coords$ | async as coords">
+  <p>x: {{ coords.x.toFixed(2) }}</p>
+  <p>y: {{ coords.y.toFixed(2) }}</p>
+  <p>size (radius): {{ coords.r.toFixed(2) }}</p>
+</div>
+<canvas #playField (mousemove)="handleMove($event)"></canvas>

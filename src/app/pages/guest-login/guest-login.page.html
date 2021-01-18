@@ -1,0 +1,8 @@
+<div class="background">
+  <form>
+    <input placeholder="Enter guest name" [formControl]="name" />
+    <div class="action-buttons">
+      <button type="button" [disabled]="name.invalid" (click)="connectGame()">Play</button>
+    </div>
+  </form>
+</div>
